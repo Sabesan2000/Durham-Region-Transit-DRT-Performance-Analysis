@@ -36,6 +36,11 @@ export function DashboardHeader() {
                 Analytics
               </Button>
             </Link>
+            <Link href="/reports">
+              <Button variant="ghost" size="sm">
+                Reports
+              </Button>
+            </Link>
           </nav>
         </div>
 
