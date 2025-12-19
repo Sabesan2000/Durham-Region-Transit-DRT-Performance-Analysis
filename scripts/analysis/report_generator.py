@@ -43,7 +43,7 @@ class DRTReportGenerator:
             'productivity': productivity
         }
         
-        print("[v0] Generating recommendations...")
+        print("[v0] Generating comprehensive optimization recommendations...")
         recommendations = self.analyzer.generate_recommendations(metrics)
         
         self.report_data = {
@@ -149,14 +149,31 @@ class DRTReportGenerator:
             f.write(f"Routes Analyzed: {self.report_data['data_overview']['unique_routes']}\n")
             f.write("\n")
             
-            # Recommendations
-            f.write("RECOMMENDATIONS\n")
+            f.write("OPTIMIZATION RECOMMENDATIONS\n")
             f.write("-" * 80 + "\n")
             for i, rec in enumerate(self.report_data['recommendations'], 1):
                 f.write(f"{i}. [{rec['priority']}] {rec['action']}\n")
                 f.write(f"   Category: {rec['category']}\n")
                 f.write(f"   Rationale: {rec['rationale']}\n")
-                f.write(f"   Impact: {rec['estimated_impact']}\n\n")
+                f.write(f"   Impact: {rec['estimated_impact']}\n")
+                if 'implementation_timeline' in rec:
+                    f.write(f"   Timeline: {rec['implementation_timeline']}\n")
+                if 'estimated_cost' in rec:
+                    f.write(f"   Cost: {rec['estimated_cost']}\n")
+                if 'best_practice' in rec:
+                    f.write(f"   Best Practice: {rec['best_practice']}\n")
+                f.write("\n")
+            
+            f.write("IMPLEMENTATION GUIDANCE\n")
+            f.write("-" * 80 + "\n")
+            f.write("1. Prioritization: Focus on High priority recommendations with short\n")
+            f.write("   implementation timelines (2-6 months) for quick wins.\n\n")
+            f.write("2. Phased Approach: Group recommendations by category and implement\n")
+            f.write("   in coordinated phases to maximize synergies.\n\n")
+            f.write("3. Monitoring: Establish KPIs for each recommendation and track\n")
+            f.write("   progress monthly using dashboard metrics.\n\n")
+            f.write("4. Stakeholder Engagement: Present to commissioners, staff, and\n")
+            f.write("   community groups for feedback before implementation.\n\n")
         
         print(f"[v0] Summary report exported to {output_path}")
 

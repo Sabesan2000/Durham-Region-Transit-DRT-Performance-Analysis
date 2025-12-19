@@ -221,48 +221,120 @@ class RidershipAnalyzer:
         return heatmap_pivot.to_dict('records')
     
     def generate_recommendations(self, metrics: Dict) -> List[Dict]:
-        """Generate data-driven recommendations based on analysis"""
+        """Generate comprehensive data-driven recommendations based on analysis and transit planning best practices"""
         
         recommendations = []
         
-        # Check for high-ridership routes needing more service
+        unreliable = metrics['ontime']['lowest_reliability']
+        for route in unreliable[:2]:
+            if route['on_time_pct'] < 75:
+                recommendations.append({
+                    'category': 'Infrastructure Investment',
+                    'priority': 'High',
+                    'action': f"Deploy transit priority measures for Route {route['route_id']} ({route['route_name']})",
+                    'rationale': f"Poor on-time performance ({route['on_time_pct']:.1f}%) caused by traffic congestion. Implement bus lanes, transit signal priority, and queue jumps on congested corridors.",
+                    'estimated_impact': '20-25% improvement in reliability, increased ridership retention',
+                    'implementation_timeline': '12-18 months',
+                    'estimated_cost': '$250K - $500K per corridor',
+                    'best_practice': 'Transit Priority Measures improve travel time consistency and service attractiveness'
+                })
+        
         top_routes = metrics['boardings']['top_5_routes']
-        for route in top_routes:
-            if route['avg_boardings_per_trip'] > 40:  # High load
+        for route in top_routes[:3]:
+            if route['avg_boardings_per_trip'] > 40:
                 recommendations.append({
                     'category': 'Operational Short-Term',
                     'priority': 'High',
-                    'action': f"Increase frequency on Route {route['route_id']} ({route['route_name']})",
-                    'rationale': f"High average boardings ({route['avg_boardings_per_trip']:.1f} per trip) indicates capacity constraints",
-                    'estimated_impact': '12-15% ridership increase'
+                    'action': f"Increase frequency on Route {route['route_id']} ({route['route_name']}) during peak hours",
+                    'rationale': f"High average boardings ({route['avg_boardings_per_trip']:.1f} per trip) indicates capacity constraints and potential overcrowding. Higher frequency reduces wait times.",
+                    'estimated_impact': '12-15% ridership increase, reduced overcrowding',
+                    'implementation_timeline': '2-3 months',
+                    'estimated_cost': '$80K - $120K annually (additional driver hours)',
+                    'best_practice': 'Frequency improvements on high-demand routes maximize system productivity'
                 })
         
-        # Check for low productivity routes
         low_prod = metrics['productivity']['bottom_10_routes']
-        for route in low_prod[:3]:
-            if route['boardings_per_hour'] < 10:
+        for route in low_prod[:2]:
+            if route['boardings_per_hour'] < 8:
                 recommendations.append({
                     'category': 'Mid-Term Planning',
                     'priority': 'Medium',
-                    'action': f"Evaluate Route {route['route_id']} ({route['route_name']}) schedule adjustment",
-                    'rationale': f"Low productivity ({route['boardings_per_hour']:.1f} boardings/hour) suggests schedule optimization needed",
-                    'estimated_impact': 'Potential 8-10% cost savings'
+                    'action': f"Replace Route {route['route_id']} ({route['route_name']}) with on-demand microtransit service",
+                    'rationale': f"Very low productivity ({route['boardings_per_hour']:.1f} boardings/hour) in suburban area. On-demand service better matches actual usage patterns.",
+                    'estimated_impact': '8-10% cost savings, improved coverage in low-density areas',
+                    'implementation_timeline': '6-12 months',
+                    'estimated_cost': '$150K implementation (microtransit technology), potential $60K annual savings',
+                    'best_practice': 'Demand-responsive service provides cost-effective coverage in low-ridership areas'
                 })
         
-        # Check for reliability issues
-        unreliable = metrics['ontime']['lowest_reliability']
-        for route in unreliable[:2]:
-            if route['on_time_pct'] < 70:
+        for route in low_prod[2:4]:
+            if route['boardings_per_hour'] < 12:
                 recommendations.append({
-                    'category': 'Mid-Term Planning',
-                    'priority': 'High',
-                    'action': f"Implement transit priority measures for Route {route['route_id']} ({route['route_name']})",
-                    'rationale': f"Poor on-time performance ({route['on_time_pct']:.1f}%) requires infrastructure improvements",
-                    'estimated_impact': '20-25% improvement in reliability'
+                    'category': 'Equity & Accessibility',
+                    'priority': 'Medium',
+                    'action': f"Apply equity-adjusted productivity threshold for Route {route['route_id']} ({route['route_name']})",
+                    'rationale': f"Low productivity ({route['boardings_per_hour']:.1f} boardings/hour) but may serve underserved neighborhoods. Evaluate using equity lens before service changes.",
+                    'estimated_impact': 'Maintains service access for vulnerable populations',
+                    'implementation_timeline': '3-6 months (equity analysis)',
+                    'estimated_cost': '$30K equity study',
+                    'best_practice': 'Equity guidelines ensure service improvements support populations with limited mobility options'
                 })
+        
+        period_comparison = metrics['boardings']['period_comparison']
+        peak_boardings = next((p for p in period_comparison if p['time_period'] == 'Weekday AM Peak'), None)
+        if peak_boardings and peak_boardings['sum'] > 50000:
+            recommendations.append({
+                'category': 'Regional Integration',
+                'priority': 'Medium',
+                'action': "Optimize DRT routes as feeder services to GO Transit stations",
+                'rationale': f"High peak period demand ({peak_boardings['sum']:,} boardings) suggests strong commuter market. Coordinate schedules with GO trains rather than duplicating long-distance service.",
+                'estimated_impact': '15-20% improvement in regional connectivity, reduced service duplication',
+                'implementation_timeline': '4-6 months',
+                'estimated_cost': '$40K schedule coordination analysis',
+                'best_practice': 'Feeder service integration reduces redundancy and improves regional transit efficiency'
+            })
+        
+        system_ontime = metrics['ontime']['system_ontime_pct']
+        if system_ontime > 80:
+            recommendations.append({
+                'category': 'Technology & Innovation',
+                'priority': 'Low',
+                'action': "Implement predictive demand forecasting system for proactive resource scheduling",
+                'rationale': f"Good baseline reliability ({system_ontime}%) provides foundation for advanced planning. Use ML forecasts to anticipate demand surges from events, weather patterns, holidays.",
+                'estimated_impact': '5-8% efficiency improvement, better resource utilization',
+                'implementation_timeline': '8-12 months',
+                'estimated_cost': '$120K - $180K (predictive analytics platform)',
+                'best_practice': 'Predictive planning matches supply with varied demand, improving satisfaction and efficiency'
+            })
+        
+        recommendations.append({
+            'category': 'Customer Experience',
+            'priority': 'Medium',
+            'action': "Deploy real-time bus tracking and arrival prediction app",
+            'rationale': "Reduces perceived wait time and rider uncertainty. Modern riders expect real-time information. Improves overall satisfaction even if on-time performance unchanged.",
+            'estimated_impact': '10-12% increase in rider satisfaction, 5-7% ridership growth',
+            'implementation_timeline': '6-9 months',
+            'estimated_cost': '$230K development and deployment',
+            'best_practice': 'Real-time information is consistently rated as top transit improvement by riders'
+        })
+        
+        if system_ontime < 85:
+            recommendations.append({
+                'category': 'Operational Short-Term',
+                'priority': 'High',
+                'action': "Launch comprehensive service reliability improvement program",
+                'rationale': f"System on-time performance ({system_ontime}%) below industry standard (85%). Systematic approach addressing operator training, schedule padding, and maintenance needed.",
+                'estimated_impact': '8-12% improvement in on-time performance within 12 months',
+                'implementation_timeline': '3-6 months to launch, ongoing',
+                'estimated_cost': '$90K program management and training',
+                'best_practice': 'Comprehensive reliability programs address root causes rather than symptoms'
+            })
+        
+        # Sort recommendations by priority
+        priority_order = {'High': 1, 'Medium': 2, 'Low': 3}
+        recommendations.sort(key=lambda x: priority_order[x['priority']])
         
         return recommendations
-
 
 if __name__ == '__main__':
     # Example usage

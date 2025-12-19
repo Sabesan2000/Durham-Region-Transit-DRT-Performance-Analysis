@@ -60,6 +60,9 @@ const sampleReport = {
       action: "Increase frequency on Route 900 (Pulse Oshawa-Ajax)",
       rationale: "High average boardings (45.2 per trip) indicates capacity constraints",
       estimated_impact: "12-15% ridership increase",
+      implementation_timeline: "2-3 months",
+      estimated_cost: "$50,000",
+      best_practice: "Adjust headways to accommodate increased demand without compromising service reliability.",
     },
     {
       category: "Mid-Term Planning",
@@ -67,6 +70,9 @@ const sampleReport = {
       action: "Implement transit priority measures for Route 412 (Local Courtice Loop)",
       rationale: "Poor on-time performance (67.2%) requires infrastructure improvements",
       estimated_impact: "20-25% improvement in reliability",
+      implementation_timeline: "6-12 months",
+      estimated_cost: "$100,000",
+      best_practice: "Collaborate with local municipalities to secure dedicated lanes and signal priority.",
     },
     {
       category: "Mid-Term Planning",
@@ -74,6 +80,9 @@ const sampleReport = {
       action: "Evaluate Route 412 (Local Courtice Loop) schedule adjustment",
       rationale: "Low productivity (6.2 boardings/hour) suggests schedule optimization needed",
       estimated_impact: "Potential 8-10% cost savings",
+      implementation_timeline: "6-12 months",
+      estimated_cost: "$20,000",
+      best_practice: "Conduct detailed ridership studies and adjust schedules accordingly.",
     },
   ],
 }
@@ -257,12 +266,16 @@ export function ReportSections() {
         </div>
       </Card>
 
-      {/* Recommendations */}
+      {/* Optimization Recommendations */}
       <Card className="p-6">
-        <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+        <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
           <div className="h-1 w-12 bg-primary rounded-full" />
-          6. Recommendations
+          6. Optimization Recommendations
         </h2>
+        <p className="text-sm text-muted-foreground mb-6">
+          Data-driven recommendations based on transit planning best practices and your dataset analysis. Grounded in
+          industry standards and proven strategies for service improvement.
+        </p>
         <div className="space-y-4">
           {sampleReport.recommendations.map((rec, idx) => (
             <div
@@ -274,7 +287,7 @@ export function ReportSections() {
                   {idx + 1}
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <Badge
                       variant={rec.priority === "High" ? "destructive" : "secondary"}
                       className={rec.priority === "High" ? "bg-red-500/10 text-red-600 border-red-500/20" : ""}
@@ -282,17 +295,71 @@ export function ReportSections() {
                       {rec.priority} Priority
                     </Badge>
                     <Badge variant="outline">{rec.category}</Badge>
+                    {rec.implementation_timeline && (
+                      <Badge variant="outline" className="bg-muted/50">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {rec.implementation_timeline}
+                      </Badge>
+                    )}
                   </div>
                   <h3 className="font-semibold text-foreground mb-2">{rec.action}</h3>
                   <p className="text-sm text-muted-foreground mb-3">{rec.rationale}</p>
-                  <div className="flex items-center gap-2 text-sm">
-                    <TrendingUp className="h-4 w-4 text-primary" />
-                    <span className="font-medium text-primary">{rec.estimated_impact}</span>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                    <div className="flex items-start gap-2">
+                      <TrendingUp className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Expected Impact</p>
+                        <p className="text-sm font-medium text-primary">{rec.estimated_impact}</p>
+                      </div>
+                    </div>
+                    {rec.estimated_cost && (
+                      <div className="flex items-start gap-2">
+                        <span className="text-primary text-sm mt-0.5">$</span>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Estimated Cost</p>
+                          <p className="text-sm font-medium text-foreground">{rec.estimated_cost}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
+
+                  {rec.best_practice && (
+                    <div className="p-3 rounded bg-primary/5 border border-primary/10">
+                      <p className="text-xs text-muted-foreground mb-1">Best Practice</p>
+                      <p className="text-sm text-foreground">{rec.best_practice}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Implementation Guidance */}
+        <div className="mt-8 p-5 rounded-lg bg-primary/5 border border-primary/20">
+          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-primary" />
+            Implementation Guidance
+          </h3>
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <p>
+              <span className="font-medium text-foreground">Prioritization:</span> Focus on High priority
+              recommendations first, particularly those with short implementation timelines (2-6 months) for quick wins.
+            </p>
+            <p>
+              <span className="font-medium text-foreground">Phased Approach:</span> Group recommendations by category
+              (Operational, Infrastructure, Technology) and implement in coordinated phases to maximize synergies.
+            </p>
+            <p>
+              <span className="font-medium text-foreground">Monitoring:</span> Establish KPIs for each recommendation
+              and track progress monthly. Use this dashboard to measure actual vs. expected impacts.
+            </p>
+            <p>
+              <span className="font-medium text-foreground">Stakeholder Engagement:</span> Present recommendations to
+              transit commissioners, operations staff, and community groups for feedback before implementation.
+            </p>
+          </div>
         </div>
       </Card>
 
